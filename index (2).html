@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-200/70">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VelCura Health • Clinic Intelligence</title>
+
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                    },
+                    colors: {
+                        velcura: {
+                            navy: '#0B2545',
+                            blue: '#0B4F9F',
+                            teal: '#00A896',
+                            cyan: '#028090',
+                            mint: '#E6F7F5',
+                            bg: '#F8FAFC',
+                            border: '#E2E8F0'
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 2px 10px -2px rgba(11, 37, 69, 0.06)',
+                        'card': '0 4px 16px -3px rgba(11, 37, 69, 0.08)',
+                        'shell': '0 24px 48px -12px rgba(11, 37, 69, 0.18)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- FontAwesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        /* Smooth tactile transitions */
+        .view-enter {
+            animation: slideUpFade 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Recording pulse & soundwave bars */
+        .mic-recording {
+            box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.45);
+            animation: micPulse 1.5s infinite cubic-bezier(0.66, 0, 0, 1);
+        }
+        @keyframes micPulse {
+            0% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.45); }
+            70% { box-shadow: 0 0 0 14px rgba(225, 29, 72, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); }
+        }
+
+        .wave-bar {
+            animation: soundWave 0.9s infinite ease-in-out;
+        }
+        .wave-bar:nth-child(2) { animation-delay: 0.15s; }
+        .wave-bar:nth-child(3) { animation-delay: 0.3s; }
+        .wave-bar:nth-child(4) { animation-delay: 0.45s; }
+        .wave-bar:nth-child(5) { animation-delay: 0.2s; }
+        @keyframes soundWave {
+            0%, 100% { height: 5px; }
+            50% { height: 18px; }
+        }
+
+        /* Clean thin scrollbars */
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 999px; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    </style>
+</head>
+<body class="h-full flex justify-center items-center font-sans text-velcura-navy antialiased select-none sm:p-4">
+
+    <!-- ===================================================================== -->
+    <!-- MOBILE-FIRST DUAL-VIEW APP SHELL (Full screen mobile, sleek on laptop) -->
+    <!-- ===================================================================== -->
+    <div class="w-full h-full sm:h-[860px] sm:max-h-[95vh] sm:max-w-[440px] bg-velcura-bg sm:rounded-[38px] sm:border-[7px] sm:border-white shadow-shell flex flex-col overflow-hidden relative ring-1 ring-slate-300/70">
+
+        <!-- ================================================================= -->
+        <!-- STICKY CLINIC HEADER & MODE SWITCHER                              -->
+        <!-- ================================================================= -->
+        <header class="bg-white/95 backdrop-blur-md border-b border-velcura-border px-4 pt-3.5 pb-3 sticky top-0 z-30">
+            <!-- Top Row: Clinic Identity + Transparent VelCura Brand Mark + 24h Sim Trigger -->
+            <div class="flex items-center justify-between gap-2 mb-2.5">
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <!-- Transparent Inline SVG of Official VelCura Health Logo -->
+                    <svg class="w-9 h-9 flex-shrink-0" viewBox="0 0 120 110" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="VelCura Health Logo">
+                        <defs>
+                            <linearGradient id="vcLeftBlue" x1="16" y1="18" x2="56" y2="92" gradientUnits="userSpaceOnUse">
+                                <stop offset="0%" stop-color="#0D6EFD"/>
+                                <stop offset="55%" stop-color="#0B4F9F"/>
+                                <stop offset="100%" stop-color="#0B2545"/>
+                            </linearGradient>
+                            <linearGradient id="vcRightTeal" x1="55" y1="14" x2="104" y2="88" gradientUnits="userSpaceOnUse">
+                                <stop offset="0%" stop-color="#00D2B8"/>
+                                <stop offset="60%" stop-color="#00A896"/>
+                                <stop offset="100%" stop-color="#028090"/>
+                            </linearGradient>
+                        </defs>
+                        <!-- Left 'V' Wing with Circuit Trace Nodes -->
+                        <path d="M16 22C14.5 19 16.8 16 20.2 16H36.5C38.8 16 40.8 17.3 41.8 19.3L63 63L53.5 85L16 22Z" fill="url(#vcLeftBlue)"/>
+                        <!-- Circuit Lines & Nodes inside Left Wing -->
+                        <circle cx="31" cy="36" r="3.2" fill="#FFFFFF"/>
+                        <path d="M31 36L49 69" stroke="#FFFFFF" stroke-width="2.3" stroke-linecap="round"/>
+                        <circle cx="33" cy="53" r="3" fill="#FFFFFF"/>
+                        <path d="M33 53L46 76" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"/>
+                        <circle cx="43" cy="48" r="2.8" fill="#FFFFFF"/>
+                        <path d="M43 48L53 66" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"/>
+                        <!-- Right Heart-Arc Curve -->
+                        <path d="M58 44C60 24 75 13 90 16C104 19 109 35 102 51C98 59 92 65 86 69C93 58 96 44 90 33C84 23 70 24 62 37L58 44Z" fill="url(#vcRightTeal)"/>
+                        <!-- Protective Healing Hand Swoop -->
+                        <path d="M52 94C54 76 64 66 83 59C86 58 88 60.5 86.5 62.8C83 67.5 76 71 71 72.5C78 72 89 67 98 56C100 53.5 103 55.5 101.8 58.5C95 74 82 81 67 85.5C59 88 55 91 52 94Z" fill="url(#vcRightTeal)"/>
+                        <!-- Medical Cross (+) Framed Inside -->
+                        <rect x="73" y="34" width="7.5" height="21" rx="2.2" fill="#00A896"/>
+                        <rect x="66.2" y="40.8" width="21" height="7.5" rx="2.2" fill="#00A896"/>
+                    </svg>
+
+                    <div class="truncate">
+                        <div class="flex items-center gap-1.5">
+                            <h1 class="text-[13px] font-extrabold text-velcura-navy tracking-tight truncate">City Care Clinic</h1>
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0"></span>
+                        </div>
+                        <p class="text-[10px] font-semibold text-slate-500 flex items-center gap-1">
+                            <span>Powered by</span>
+                            <span class="font-extrabold text-velcura-navy">VelCura</span>
+                            <span class="font-bold text-velcura-cyan tracking-wide">Health</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Always-Accessible 24h WhatsApp Simulator Button -->
+                <button onclick="openWhatsAppSim()" class="flex-shrink-0 px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 active:scale-95 border border-emerald-200 text-emerald-800 text-[11px] font-bold flex items-center gap-1.5 transition-all shadow-sm">
+                    <i class="fa-brands fa-whatsapp text-emerald-600 text-sm"></i>
+                    <span>24h Sim</span>
+                </button>
+            </div>
+
+            <!-- Mode Switcher Segmented Control -->
+            <div class="grid grid-cols-2 p-1 bg-slate-100 rounded-xl border border-slate-200/80">
+                <button id="mode-btn-patient" onclick="switchMode('patient')" class="py-1.5 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 bg-white text-velcura-navy shadow-sm">
+                    <i class="fa-solid fa-qrcode text-velcura-teal"></i>
+                    <span>Patient QR View</span>
+                </button>
+                <button id="mode-btn-doctor" onclick="switchMode('doctor')" class="py-1.5 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 text-slate-500 hover:text-velcura-navy">
+                    <i class="fa-solid fa-stethoscope"></i>
+                    <span>Doctor Console</span>
+                    <span id="header-waiting-badge" class="px-1.5 py-0.2 rounded-full bg-velcura-teal text-white text-[10px] font-extrabold">3</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- ================================================================= -->
+        <!-- MAIN SCROLLABLE WORKSPACE                                         -->
+        <!-- ================================================================= -->
+        <main class="flex-1 overflow-y-auto overflow-x-hidden relative flex flex-col">
+
+            <!-- ============================================================= -->
+            <!-- VIEW 1: PATIENT QR CHECK-IN FLOW (4 Ultra-Easy Steps)          -->
+            <!-- ============================================================= -->
+            <section id="view-patient" class="flex-1 flex flex-col">
+                <!-- Progress Bar -->
+                <div class="w-full bg-slate-200/70 h-1">
+                    <div id="patient-progress" class="bg-velcura-teal h-full transition-all duration-300" style="width: 25%;"></div>
+                </div>
+
+                <!-- STEP 1: Welcome & Mobile Number -->
+                <div id="p-step-1" class="flex-1 flex flex-col justify-between p-5 view-enter">
+                    <div class="space-y-5 pt-2">
+                        <!-- Clinic Welcome Card -->
+                        <div class="bg-white rounded-2xl p-4 border border-velcura-border shadow-soft flex items-center gap-3.5">
+                            <div class="w-12 h-12 rounded-2xl bg-velcura-mint border border-velcura-teal/20 flex items-center justify-center text-velcura-cyan text-xl flex-shrink-0">
+                                <i class="fa-solid fa-hospital-user"></i>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-velcura-cyan bg-velcura-mint px-2 py-0.5 rounded-md">Instant QR Check-in</span>
+                                <h2 class="text-base font-extrabold text-velcura-navy mt-1">Namaste! Welcome to City Care Clinic</h2>
+                                <p class="text-[11px] text-slate-500">Dr. Rajesh Sharma • General Physician</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-1">
+                            <h3 class="text-lg font-extrabold text-velcura-navy">Apna Mobile Number Daalein</h3>
+                            <p class="text-xs text-slate-500">Bina line mein lage turant apna OPD token paayein.</p>
+                        </div>
+
+                        <!-- Clean 10-Digit Mobile Input -->
+                        <div class="space-y-2">
+                            <div class="flex items-center bg-white border-2 border-slate-200 focus-within:border-velcura-teal rounded-2xl px-4 py-3.5 shadow-soft transition-colors">
+                                <span class="text-sm font-bold text-slate-500 pr-3 mr-3 border-r border-slate-200 flex items-center gap-1.5">
+                                    <span>🇮🇳</span> +91
+                                </span>
+                                <input id="inp-phone" type="tel" maxlength="10" value="9823145678" placeholder="98231 45678" class="w-full bg-transparent text-lg font-extrabold text-velcura-navy tracking-wider focus:outline-none placeholder:text-slate-300">
+                                <button type="button" onclick="document.getElementById('inp-phone').value=''; document.getElementById('inp-phone').focus();" class="text-slate-300 hover:text-slate-500 px-1" title="Clear">
+                                    <i class="fa-solid fa-circle-xmark"></i>
+                                </button>
+                            </div>
+
+                            <div class="flex items-center gap-2 text-[11px] text-slate-500 px-1">
+                                <i class="fa-brands fa-whatsapp text-emerald-600 text-sm"></i>
+                                <span>Aapka OPD token aur 24h haal-chaal WhatsApp par aayega.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-6">
+                        <button onclick="goPatientStep(2)" class="w-full py-4 px-5 bg-velcura-navy hover:bg-velcura-blue active:scale-[0.99] text-white font-bold rounded-2xl text-sm flex items-center justify-center gap-2 shadow-card transition-all">
+                            <span>Aage Badhein (Continue)</span>
+                            <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- STEP 2: Basic Patient Details (Easy Taps) -->
+                <div id="p-step-2" class="flex-1 flex flex-col justify-between p-5 view-enter hidden">
+                    <div class="space-y-5">
+                        <div class="flex items-center justify-between">
+                            <button onclick="goPatientStep(1)" class="w-8 h-8 rounded-full bg-white border border-slate-200 text-slate-600 flex items-center justify-center text-xs shadow-sm active:scale-95">
+                                <i class="fa-solid fa-arrow-left"></i>
+                            </button>
+                            <span class="text-[11px] font-bold text-velcura-cyan bg-velcura-mint px-2.5 py-1 rounded-full">Step 2 of 3 • Basic Info</span>
+                        </div>
+
+                        <div>
+                            <h2 class="text-lg font-extrabold text-velcura-navy">Mareez ki Jankari</h2>
+                            <p class="text-xs text-slate-500">Jisko doctor ko dikhana hai unka naam aur umar chunein.</p>
+                        </div>
+
+                        <!-- Patient Full Name -->
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-bold text-slate-700">Pura Naam (Full Name)</label>
+                            <input id="inp-name" type="text" value="Rahul" placeholder="Jaise: Rahul" class="w-full bg-white border-2 border-slate-200 focus:border-velcura-teal rounded-2xl px-4 py-3 text-sm font-bold text-velcura-navy focus:outline-none shadow-soft">
+                        </div>
+
+                        <!-- Tactile Age Stepper + Quick Chips -->
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-slate-700">Umar (Age in Years)</label>
+                            <div class="flex items-center gap-2.5">
+                                <div class="flex items-center bg-white border-2 border-slate-200 rounded-2xl p-1 shadow-soft">
+                                    <button type="button" onclick="adjustAge(-1)" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-velcura-navy font-extrabold text-sm">-</button>
+                                    <input id="inp-age" type="number" value="32" class="w-12 text-center font-extrabold text-base text-velcura-navy focus:outline-none bg-transparent">
+                                    <button type="button" onclick="adjustAge(1)" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-velcura-navy font-extrabold text-sm">+</button>
+                                </div>
+                                <div class="flex flex-wrap gap-1.5 flex-1">
+                                    <button type="button" onclick="pickAge(18, this)" class="age-chip px-2.5 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-600">18</button>
+                                    <button type="button" onclick="pickAge(32, this)" class="age-chip px-2.5 py-2 rounded-xl bg-velcura-mint border border-velcura-teal text-xs font-extrabold text-velcura-cyan">32</button>
+                                    <button type="button" onclick="pickAge(42, this)" class="age-chip px-2.5 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-600">42</button>
+                                    <button type="button" onclick="pickAge(50, this)" class="age-chip px-2.5 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-600">50</button>
+                                    <button type="button" onclick="pickAge(65, this)" class="age-chip px-2.5 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-600">65+</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Large Gender Cards -->
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-slate-700">Gender Chunein</label>
+                            <div class="grid grid-cols-3 gap-2.5">
+                                <button type="button" onclick="selectGender('M', this)" class="gender-card py-3 px-2 rounded-2xl border-2 border-velcura-teal bg-velcura-mint text-velcura-navy font-extrabold text-xs flex flex-col items-center gap-1 shadow-sm">
+                                    <i class="fa-solid fa-mars text-velcura-cyan text-base"></i>
+                                    <span>Male (Purush)</span>
+                                </button>
+                                <button type="button" onclick="selectGender('F', this)" class="gender-card py-3 px-2 rounded-2xl border-2 border-slate-200 bg-white text-slate-600 font-bold text-xs flex flex-col items-center gap-1">
+                                    <i class="fa-solid fa-venus text-slate-400 text-base"></i>
+                                    <span>Female (Mahila)</span>
+                                </button>
+                                <button type="button" onclick="selectGender('O', this)" class="gender-card py-3 px-2 rounded-2xl border-2 border-slate-200 bg-white text-slate-600 font-bold text-xs flex flex-col items-center gap-1">
+                                    <i class="fa-solid fa-user text-slate-400 text-base"></i>
+                                    <span>Other</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-6">
+                        <button onclick="goPatientStep(3)" class="w-full py-4 px-5 bg-velcura-navy hover:bg-velcura-blue active:scale-[0.99] text-white font-bold rounded-2xl text-sm flex items-center justify-center gap-2 shadow-card transition-all">
+                            <span>Takleef Batayein (Next)</span>
+                            <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- STEP 3: Symptoms + Friendly Voice Mic -->
+                <div id="p-step-3" class="flex-1 flex flex-col justify-between p-5 view-enter hidden">
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <button onclick="goPatientStep(2)" class="w-8 h-8 rounded-full bg-white border border-slate-200 text-slate-600 flex items-center justify-center text-xs shadow-sm active:scale-95">
+                                <i class="fa-solid fa-arrow-left"></i>
+                            </button>
+                            <span class="text-[11px] font-bold text-velcura-cyan bg-velcura-mint px-2.5 py-1 rounded-full">Step 3 of 3 • Symptoms</span>
+                        </div>
+
+                        <div>
+                            <h2 class="text-lg font-extrabold text-velcura-navy">Aaj kya takleef ho rahi hai?</h2>
+                            <p class="text-xs text-slate-500">Mic daba kar apni bhasha mein bolein, ya neeche button chunein.</p>
+                        </div>
+
+                        <!-- Prominent Friendly Voice Mic + Textbox Card -->
+                        <div class="bg-white border-2 border-slate-200 focus-within:border-velcura-teal rounded-2xl p-3.5 shadow-soft space-y-3 transition-colors">
+                            <!-- Prominent Mic Action Bar -->
+                            <div class="flex items-center justify-between bg-slate-50 rounded-xl p-2.5 border border-slate-200/80">
+                                <div class="flex items-center gap-2.5">
+                                    <button type="button" id="btn-voice-mic" onclick="toggleVoiceCapture()" class="w-11 h-11 rounded-full bg-rose-500 hover:bg-rose-600 active:scale-95 text-white flex items-center justify-center shadow-sm transition-all">
+                                        <i id="voice-mic-icon" class="fa-solid fa-microphone text-base"></i>
+                                    </button>
+                                    <div>
+                                        <p id="voice-status-title" class="text-xs font-extrabold text-velcura-navy">Bol kar batayein (Tap Mic)</p>
+                                        <p id="voice-status-sub" class="text-[10px] text-slate-500">Hindi / Hinglish / English</p>
+                                    </div>
+                                </div>
+
+                                <!-- Animated Soundwave (Visible when recording) -->
+                                <div id="voice-wave" class="hidden items-center gap-1 pr-2 h-6">
+                                    <span class="wave-bar w-1 bg-rose-500 rounded-full"></span>
+                                    <span class="wave-bar w-1 bg-rose-400 rounded-full"></span>
+                                    <span class="wave-bar w-1 bg-rose-600 rounded-full"></span>
+                                    <span class="wave-bar w-1 bg-rose-400 rounded-full"></span>
+                                    <span class="wave-bar w-1 bg-rose-500 rounded-full"></span>
+                                </div>
+                            </div>
+
+                            <textarea id="inp-symptoms" rows="2" placeholder="Yahan likhein ya mic dabayein..." class="w-full bg-transparent text-xs font-semibold text-velcura-navy placeholder:text-slate-400 focus:outline-none resize-none leading-relaxed">2 din se bukhar (102°F) aur badan dard ho raha hai. Ulti nahi hai.</textarea>
+                        </div>
+
+                        <!-- Quick Hinglish Symptom Pills -->
+                        <div class="space-y-1.5">
+                            <label class="text-[11px] font-bold text-slate-600">Jaldi chunne ke liye tap karein:</label>
+                            <div class="flex flex-wrap gap-1.5">
+                                <button type="button" onclick="toggleSymptomPill(this, 'Fever')" class="sym-pill px-2.5 py-1.5 rounded-xl border border-velcura-teal bg-velcura-mint text-velcura-navy text-[11px] font-bold transition-all">✓ Fever</button>
+                                <button type="button" onclick="toggleSymptomPill(this, 'Body ache')" class="sym-pill px-2.5 py-1.5 rounded-xl border border-velcura-teal bg-velcura-mint text-velcura-navy text-[11px] font-bold transition-all">✓ Body ache</button>
+                                <button type="button" onclick="toggleSymptomPill(this, 'Cough')" class="sym-pill px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white text-slate-600 text-[11px] font-semibold transition-all">+ Cough</button>
+                                <button type="button" onclick="toggleSymptomPill(this, 'Headache')" class="sym-pill px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white text-slate-600 text-[11px] font-semibold transition-all">+ Headache</button>
+                                <button type="button" onclick="toggleSymptomPill(this, 'Weakness')" class="sym-pill px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white text-slate-600 text-[11px] font-semibold transition-all">+ Weakness</button>
+                                <button type="button" onclick="toggleSymptomPill(this, 'Vomiting')" class="sym-pill px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white text-slate-600 text-[11px] font-semibold transition-all">+ Vomiting</button>
+                            </div>
+                        </div>
+
+                        <!-- Duration Selector -->
+                        <div class="space-y-1.5">
+                            <label class="text-[11px] font-bold text-slate-600">Kab se takleef hai? (Duration)</label>
+                            <div class="grid grid-cols-4 gap-1.5">
+                                <button type="button" onclick="selectDuration('since today', this)" class="dur-chip py-2 px-1 rounded-xl border border-slate-200 bg-white text-[11px] font-semibold text-slate-600">Aaj se</button>
+                                <button type="button" onclick="selectDuration('since 2 days', this)" class="dur-chip py-2 px-1 rounded-xl border-2 border-velcura-teal bg-velcura-mint text-[11px] font-extrabold text-velcura-navy">2 Din se</button>
+                                <button type="button" onclick="selectDuration('since 1 week', this)" class="dur-chip py-2 px-1 rounded-xl border border-slate-200 bg-white text-[11px] font-semibold text-slate-600">1 Hafta</button>
+                                <button type="button" onclick="selectDuration('more than 1 week', this)" class="dur-chip py-2 px-1 rounded-xl border border-slate-200 bg-white text-[11px] font-semibold text-slate-600">1 Hafte+</button>
+                            </div>
+                        </div>
+
+                        <!-- Simple Safety History / Allergy Toggle -->
+                        <div class="space-y-1.5">
+                            <label class="text-[11px] font-bold text-slate-600">Koi purani bimari ya dawai allergy?</label>
+                            <div class="grid grid-cols-3 gap-1.5">
+                                <button type="button" onclick="selectHistoryFlag('Not reported', this)" class="hist-chip py-2 px-2 rounded-xl border-2 border-velcura-teal bg-velcura-mint text-[11px] font-extrabold text-velcura-navy">Koi nahi</button>
+                                <button type="button" onclick="selectHistoryFlag('BP / Sugar history', this)" class="hist-chip py-2 px-2 rounded-xl border border-slate-200 bg-white text-[11px] font-semibold text-slate-600">BP / Sugar</button>
+                                <button type="button" onclick="selectHistoryFlag('Drug Allergy reported', this)" class="hist-chip py-2 px-2 rounded-xl border border-slate-200 bg-white text-[11px] font-semibold text-slate-600">Dawai Allergy</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-4">
+                        <button onclick="submitPatientCheckin()" class="w-full py-4 px-5 bg-velcura-teal hover:bg-velcura-cyan active:scale-[0.99] text-white font-extrabold rounded-2xl text-sm flex items-center justify-center gap-2 shadow-card transition-all">
+                            <i class="fa-solid fa-ticket"></i>
+                            <span>Submit & OPD Token Lein</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- STEP 4: Live Digital Boarding-Pass Token -->
+                <div id="p-step-4" class="flex-1 flex flex-col justify-between p-5 view-enter hidden">
+                    <div class="space-y-4 pt-1">
+                        <div class="text-center space-y-1">
+                            <div class="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 mx-auto flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                            <h2 class="text-lg font-extrabold text-velcura-navy">Aapka Token Ban Gaya Hai!</h2>
+                            <p class="text-xs text-slate-500">Aapki jankari Doctor ke screen par pahunch gayi hai.</p>
+                        </div>
+
+                        <!-- Boarding Pass Token Card -->
+                        <div class="bg-white rounded-3xl border border-velcura-border shadow-card overflow-hidden">
+                            <!-- Top Navy Strip -->
+                            <div class="bg-velcura-navy px-5 py-4 text-white flex items-center justify-between">
+                                <div>
+                                    <span class="text-[10px] font-bold uppercase tracking-widest text-teal-300">Live OPD Token</span>
+                                    <div id="token-pass-number" class="text-3xl font-extrabold tracking-tight mt-0.5">#A-14</div>
+                                </div>
+                                <div class="text-right">
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-[10px] font-bold">
+                                        <i class="fa-solid fa-circle-check"></i> Pre-Check Done
+                                    </span>
+                                    <p class="text-[10px] text-slate-300 mt-1">Cabin #1 • Ground Floor</p>
+                                </div>
+                            </div>
+
+                            <!-- Perforated Divider Look -->
+                            <div class="relative flex items-center justify-between px-3 bg-slate-50/70 border-b border-dashed border-slate-200 py-2">
+                                <span class="text-[11px] font-bold text-slate-600" id="token-pass-patient">Rahul, 32</span>
+                                <span class="text-[11px] font-bold text-amber-600 flex items-center gap-1">
+                                    <i class="fa-regular fa-clock"></i> ~8 mins wait (2 ahead)
+                                </span>
+                            </div>
+
+                            <!-- Details Body -->
+                            <div class="p-4 space-y-2.5 text-xs">
+                                <div class="flex justify-between">
+                                    <span class="text-slate-500">Doctor:</span>
+                                    <span class="font-bold text-velcura-navy">Dr. Rajesh Sharma (MD)</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-500">Chief Note Sent:</span>
+                                    <span id="token-pass-note" class="font-semibold text-slate-700 text-right max-w-[200px] truncate">Fever since 2 days · Body ache</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-velcura-mint/70 border border-velcura-teal/20 rounded-2xl p-3 flex items-center gap-2.5 text-[11px] text-velcura-navy">
+                            <i class="fa-solid fa-bolt text-velcura-teal text-sm"></i>
+                            <span><strong>Demo Tip:</strong> Ab Doctor Console khol kar dekhein ki doctor ko yeh case sirf 5 second mein kaise samajh aata hai.</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2 pt-4">
+                        <button onclick="switchMode('doctor')" class="w-full py-3.5 px-5 bg-velcura-navy hover:bg-velcura-blue active:scale-[0.99] text-white font-bold rounded-2xl text-xs flex items-center justify-center gap-2 shadow-card transition-all">
+                            <span>Jump to Doctor Console</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                        <button onclick="resetNewCheckin()" class="w-full py-2 text-xs font-bold text-slate-500 hover:text-velcura-navy">
+                            + Doosre Patient ka Demo Check-in Karein
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================= -->
+            <!-- VIEW 2: DOCTOR OPD CONSOLE (5-Second Scannable Summary)       -->
+            <!-- ============================================================= -->
+            <section id="view-doctor" class="flex-1 flex flex-col p-4 space-y-3.5 hidden view-enter">
+
+                <!-- 1. Compact Metrics Strip -->
+                <div class="grid grid-cols-3 gap-2">
+                    <div class="bg-white rounded-2xl p-2.5 border border-velcura-border shadow-soft flex items-center justify-between">
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase">Waiting</p>
+                            <p id="doc-stat-waiting" class="text-lg font-extrabold text-velcura-navy leading-tight">3</p>
+                        </div>
+                        <span class="w-7 h-7 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xs">
+                            <i class="fa-solid fa-user-clock"></i>
+                        </span>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-2.5 border border-velcura-border shadow-soft flex items-center justify-between">
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase">Seen</p>
+                            <p id="doc-stat-seen" class="text-lg font-extrabold text-emerald-600 leading-tight">8</p>
+                        </div>
+                        <span class="w-7 h-7 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs">
+                            <i class="fa-solid fa-check-double"></i>
+                        </span>
+                    </div>
+
+                    <button onclick="scrollToRecoveryTracker()" class="bg-white rounded-2xl p-2.5 border border-rose-200 shadow-soft flex items-center justify-between text-left hover:bg-rose-50/40 transition-colors">
+                        <div>
+                            <p class="text-[10px] font-bold text-rose-600 uppercase flex items-center gap-1">
+                                <span>24h Alert</span>
+                                <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping"></span>
+                            </p>
+                            <p id="doc-stat-alerts" class="text-lg font-extrabold text-rose-600 leading-tight">1</p>
+                        </div>
+                        <span class="w-7 h-7 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-xs">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </span>
+                    </button>
+                </div>
+
+                <!-- 2. Horizontal Scannable Token Queue Pills -->
+                <div class="space-y-1.5">
+                    <div class="flex items-center justify-between px-0.5">
+                        <span class="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">Live OPD Queue (Tap Token)</span>
+                        <span class="text-[10px] font-semibold text-velcura-cyan">5-Sec Pre-Consult View</span>
+                    </div>
+                    <div id="doctor-token-strip" class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+                        <!-- Dynamically populated token pills -->
+                    </div>
+                </div>
+
+                <!-- 3. THE 5-SECOND PATIENT SUMMARY CARD (Exact Requested Structure) -->
+                <div id="doctor-summary-card" class="bg-white rounded-3xl border border-velcura-border shadow-card overflow-hidden">
+                    
+                    <!-- Summary Card Header: PATIENT: Rahul, 32 | New Visit -->
+                    <div class="px-4 py-3.5 bg-slate-50 border-b border-velcura-border flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <span id="sum-token" class="px-2.5 py-1 rounded-lg bg-velcura-navy text-white font-extrabold text-[11px] tracking-tight flex-shrink-0">#A-14</span>
+                            <h3 id="sum-patient-header" class="text-[13px] font-extrabold text-velcura-navy truncate">
+                                PATIENT: Rahul, 32 <span class="text-slate-400 font-semibold">|</span> <span class="text-velcura-cyan">New Visit</span>
+                            </h3>
+                        </div>
+                        <span id="sum-status-pill" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-200/80 text-slate-600 flex-shrink-0">
+                            Waiting
+                        </span>
+                    </div>
+
+                    <div class="p-4 space-y-4">
+                        <!-- SECTION 1: 🔴 MAIN COMPLAINT -->
+                        <div class="space-y-1">
+                            <div class="text-[10px] font-extrabold uppercase tracking-wider text-rose-600 flex items-center gap-1.5">
+                                <span>🔴 MAIN COMPLAINT</span>
+                            </div>
+                            <p id="sum-main-complaint" class="text-[15px] font-extrabold text-velcura-navy leading-snug">
+                                Fever since 2 days · Body ache
+                            </p>
+                        </div>
+
+                        <!-- SECTION 2: KEY FINDINGS -->
+                        <div class="space-y-1.5 pt-2.5 border-t border-slate-100">
+                            <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">
+                                KEY FINDINGS
+                            </div>
+                            <div id="sum-key-findings" class="bg-slate-50/90 rounded-2xl p-3 border border-slate-200/80 space-y-1.5 text-xs">
+                                <!-- Populated via JS -->
+                            </div>
+                        </div>
+
+                        <!-- SECTION 3: ⚠️ DOCTOR'S ATTENTION -->
+                        <div class="space-y-1.5 pt-1">
+                            <div class="text-[10px] font-extrabold uppercase tracking-wider text-amber-700 flex items-center gap-1">
+                                <span>⚠️ DOCTOR'S ATTENTION</span>
+                            </div>
+                            <ul id="sum-doctor-attention" class="bg-amber-50/70 rounded-2xl p-3 border border-amber-200/80 space-y-1.5 text-xs text-velcura-navy font-semibold">
+                                <!-- Populated via JS -->
+                            </ul>
+                        </div>
+
+                        <!-- Expandable Full History Drawer (Toggled by [View Full History]) -->
+                        <div id="sum-history-drawer" class="hidden bg-slate-50 rounded-2xl p-3 border border-slate-200 text-xs space-y-1.5 view-enter">
+                            <div class="flex items-center justify-between text-[10px] font-extrabold uppercase text-slate-400">
+                                <span>Patient Raw Intake &amp; Contact</span>
+                                <button type="button" onclick="toggleFullHistory()" class="text-velcura-cyan hover:underline">Hide</button>
+                            </div>
+                            <p id="sum-raw-note" class="text-slate-700 font-medium italic"></p>
+                            <p id="sum-raw-meta" class="text-[11px] text-slate-500 font-semibold"></p>
+                        </div>
+
+                        <!-- Primary Action Buttons: [View Full History]  [Start Consultation] -->
+                        <div class="grid grid-cols-2 gap-2.5 pt-1">
+                            <button type="button" id="btn-view-history" onclick="toggleFullHistory()" class="py-3 px-3 rounded-2xl border-2 border-slate-200 hover:border-slate-300 bg-white text-velcura-navy font-extrabold text-xs flex items-center justify-center gap-1.5 active:scale-[0.99] transition-all">
+                                <i class="fa-regular fa-file-lines text-slate-500"></i>
+                                <span>View Full History</span>
+                            </button>
+
+                            <button type="button" id="btn-complete-visit" onclick="completeDoctorVisit()" class="py-3 px-3 rounded-2xl bg-velcura-navy hover:bg-velcura-blue text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-card active:scale-[0.99] transition-all">
+                                <span>Start Consultation</span>
+                                <i class="fa-solid fa-arrow-right text-[10px] text-teal-300"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. 24-HOUR PATIENT RECOVERY TRACKER (Live WhatsApp Telemetry) -->
+                <div id="recovery-tracker-section" class="bg-white rounded-3xl border border-velcura-border shadow-soft p-4 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-xs font-extrabold text-velcura-navy flex items-center gap-1.5">
+                                <i class="fa-brands fa-whatsapp text-emerald-600 text-sm"></i>
+                                <span>24h Patient Recovery Tracker</span>
+                            </h3>
+                            <p class="text-[10px] text-slate-500">Kal/aaj dekhe gaye patients ka live WhatsApp feedback</p>
+                        </div>
+                        <button onclick="openWhatsAppSim()" class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-[10px] font-extrabold">
+                            Test Reply →
+                        </button>
+                    </div>
+
+                    <div id="recovery-list" class="space-y-2">
+                        <!-- Dynamically rendered recovery cards with 1-tap Doctor Quick Reply for Unwell patients -->
+                    </div>
+                </div>
+
+            </section>
+        </main>
+
+        <!-- ================================================================= -->
+        <!-- PART 3: INTERACTIVE 24h WHATSAPP FOLLOW-UP SIMULATOR OVERLAY      -->
+        <!-- ================================================================= -->
+        <div id="whatsapp-modal" class="absolute inset-0 bg-slate-900/50 backdrop-blur-[2px] z-40 flex flex-col justify-end hidden">
+            <div class="bg-[#EFEAE2] rounded-t-[30px] overflow-hidden shadow-2xl border-t border-slate-200 flex flex-col max-h-[88%] view-enter">
+                
+                <!-- Authentic Light WhatsApp Header -->
+                <div class="bg-[#075E54] text-white px-4 py-3 flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-full bg-white flex items-center justify-center text-[#075E54] font-extrabold text-sm shadow-sm">
+                            <i class="fa-solid fa-stethoscope"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-1">
+                                <h4 class="text-xs font-extrabold">City Care Clinic • VelCura</h4>
+                                <i class="fa-solid fa-circle-check text-emerald-300 text-[10px]"></i>
+                            </div>
+                            <p class="text-[10px] text-emerald-100">Official 24h Recovery Check-in</p>
+                        </div>
+                    </div>
+                    <button onclick="closeWhatsAppSim()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white text-xs">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <!-- Patient Selector Pill inside Simulator for Easy Demoing -->
+                <div class="bg-[#E4DDD3] px-4 py-2 flex items-center justify-between text-[11px] border-b border-black/5">
+                    <span class="font-bold text-slate-700">Simulating Phone of:</span>
+                    <select id="wa-patient-select" onchange="syncWhatsAppPreview()" class="bg-white border border-slate-300 rounded-lg px-2 py-1 text-[11px] font-extrabold text-velcura-navy focus:outline-none">
+                        <!-- Populated via JS -->
+                    </select>
+                </div>
+
+                <!-- Chat Wallpaper Area -->
+                <div class="p-4 space-y-3 overflow-y-auto flex-1">
+                    <div class="text-center">
+                        <span class="px-2.5 py-0.5 rounded-lg bg-white/80 text-[10px] font-semibold text-slate-500 shadow-sm">24 Hours After OPD Visit</span>
+                    </div>
+
+                    <!-- Incoming Clinic Message Bubble -->
+                    <div class="bg-white rounded-2xl rounded-tl-sm p-3.5 shadow-sm max-w-[92%] space-y-1.5 text-xs text-slate-800 border border-black/5">
+                        <p class="leading-relaxed">
+                            Namaste <strong id="wa-msg-name" class="text-velcura-navy">Rahul</strong> ji 🙏,<br>
+                            Kal aapne <strong>City Care Clinic</strong> mein <strong>Dr. Rajesh Sharma</strong> ko dikhaya tha. Di gayi salah aur ilaaj ke baad aaj aapki tabiyat kaisi hai?
+                        </p>
+                        <div class="text-[9px] text-slate-400 text-right">10:30 AM</div>
+                    </div>
+
+                    <!-- Patient Selected Reply Bubble (Appears instantly on click) -->
+                    <div id="wa-patient-reply-bubble" class="hidden ml-auto bg-[#D9FDD3] rounded-2xl rounded-tr-sm p-3 shadow-sm max-w-[85%] text-xs text-slate-900 border border-emerald-200">
+                        <p id="wa-reply-text" class="font-bold"></p>
+                        <div class="text-[9px] text-emerald-700 text-right mt-1">Just now ✓✓</div>
+                    </div>
+
+                    <!-- Interactive Reply Options -->
+                    <div class="bg-white/95 rounded-2xl p-3 shadow-sm border border-black/5 space-y-2">
+                        <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider text-center">Patient Tap Karega (Updates Doctor Live):</p>
+
+                        <button onclick="triggerPatientFollowupReply('better', '🟢 Ab kaafi behtar hai (Feeling Better)')" class="w-full py-2.5 px-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 active:scale-[0.99] border border-emerald-200 text-emerald-900 font-bold text-xs flex items-center justify-between transition-all">
+                            <span>🟢 Ab kaafi behtar hai (Feeling Better)</span>
+                            <i class="fa-solid fa-chevron-right text-[10px] text-emerald-600"></i>
+                        </button>
+
+                        <button onclick="triggerPatientFollowupReply('mild', '🟡 Thoda hi aaram hai (Mild Relief)')" class="w-full py-2.5 px-3 rounded-xl bg-amber-50 hover:bg-amber-100 active:scale-[0.99] border border-amber-200 text-amber-900 font-bold text-xs flex items-center justify-between transition-all">
+                            <span>🟡 Thoda hi aaram hai (Mild Relief)</span>
+                            <i class="fa-solid fa-chevron-right text-[10px] text-amber-600"></i>
+                        </button>
+
+                        <button onclick="triggerPatientFollowupReply('worse', '🔴 Aaram nahi hai / Naye lakshan hain')" class="w-full py-2.5 px-3 rounded-xl bg-rose-50 hover:bg-rose-100 active:scale-[0.99] border border-rose-200 text-rose-900 font-bold text-xs flex items-center justify-between transition-all">
+                            <span>🔴 Aaram nahi hai / Naye lakshan</span>
+                            <i class="fa-solid fa-chevron-right text-[10px] text-rose-600"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Crisp Floating Toast Banner -->
+        <div id="app-toast" class="absolute bottom-4 left-4 right-4 bg-velcura-navy text-white px-4 py-3 rounded-2xl text-xs font-bold shadow-lg flex items-center justify-between gap-2 transform translate-y-24 opacity-0 transition-all duration-300 z-50 pointer-events-none">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-circle-check text-velcura-teal text-sm"></i>
+                <span id="app-toast-text">Updated</span>
+            </div>
+            <span class="text-[10px] text-teal-300 font-semibold">LIVE SYNC</span>
+        </div>
+
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- INTERACTIVE CLINICAL WORKFLOW ENGINE                                  -->
+    <!-- ===================================================================== -->
+    <script>
+        const state = {
+            mode: 'patient',
+            pStep: 1,
+            gender: 'M',
+            duration: 'since 2 days',
+            historyFlag: 'Not reported',
+            selectedPills: ['Fever', 'Body ache'],
+            isListening: false,
+            recognition: null,
+            seenCount: 8,
+            activePatientId: 'A-14',
+
+            patients: [
+                {
+                    id: 'A-14',
+                    token: '#A-14',
+                    name: 'Rahul',
+                    age: 32,
+                    gender: 'M',
+                    visitType: 'New Visit',
+                    phone: '9823145678',
+                    priority: 'amber',
+                    attentionLabel: 'Fever · 2 days',
+                    status: 'waiting',
+                    mainComplaint: 'Fever since 2 days · Body ache',
+                    keyFindings: [
+                        { label: 'Temperature', value: '102°F' },
+                        { label: 'Vomiting', value: 'No' },
+                        { label: 'Medical history', value: 'Not reported' }
+                    ],
+                    doctorAttention: [
+                        'Assess fever and hydration',
+                        'Check for warning signs',
+                        'Relevant history: Not yet collected'
+                    ],
+                    symptomsNote: '2 din se bukhar (102°F) aur badan dard ho raha hai. Ulti nahi hai.',
+                    followupState: 'scheduled',
+                    followupReplyText: '24h check-in scheduled post visit',
+                    doctorReplySent: ''
+                },
+                {
+                    id: 'A-15',
+                    token: '#A-15',
+                    name: 'Sunita Devi',
+                    age: 58,
+                    gender: 'F',
+                    visitType: 'Follow-up Visit',
+                    phone: '9890112233',
+                    priority: 'red',
+                    attentionLabel: '🔴 Follow-up Unwell',
+                    status: 'waiting',
+                    mainComplaint: 'Dizziness since 2 days · Epigastric burning',
+                    keyFindings: [
+                        { label: 'BP / Vitals', value: 'Not recorded yet' },
+                        { label: 'Vomiting', value: 'Mild nausea' },
+                        { label: 'Medical history', value: 'Known BP & Sugar' }
+                    ],
+                    doctorAttention: [
+                        'Check sitting & standing BP immediately',
+                        'Assess blood sugar (RBS) & hydration',
+                        'Review current antihypertensive dosage'
+                    ],
+                    symptomsNote: 'Kal se chakkar aa rahe hain aur pet mein jalan abhi bhi bani hui hai.',
+                    followupState: 'worse',
+                    followupReplyText: '🔴 Aaram nahi hai / Chakkar aa rahe hain',
+                    doctorReplySent: ''
+                },
+                {
+                    id: 'A-16',
+                    token: '#A-16',
+                    name: 'Amit Patel',
+                    age: 34,
+                    gender: 'M',
+                    visitType: 'New Visit',
+                    phone: '9765400981',
+                    priority: 'green',
+                    attentionLabel: 'Dry Cough · 3 days',
+                    status: 'waiting',
+                    mainComplaint: 'Dry cough since 3 days · Mild throat irritation',
+                    keyFindings: [
+                        { label: 'Temperature', value: 'Afebrile (Normal)' },
+                        { label: 'Breathlessness', value: 'No' },
+                        { label: 'Medical history', value: 'Not reported' }
+                    ],
+                    doctorAttention: [
+                        'Auscultate chest & check throat',
+                        'Rule out allergic triggers',
+                        'Drug allergy history: Not yet collected'
+                    ],
+                    symptomsNote: 'Mausam badalne ke baad se sukhi khansi aur gale mein halka dard hai.',
+                    followupState: 'better',
+                    followupReplyText: '🟢 Ab kaafi behtar hai (Feeling Better)',
+                    doctorReplySent: ''
+                }
+            ]
+        };
+
+        // =====================================================================
+        // MODE SWITCHER (Patient QR View <-> Doctor Console)
+        // =====================================================================
+        function switchMode(targetMode) {
+            state.mode = targetMode;
+            const pView = document.getElementById('view-patient');
+            const dView = document.getElementById('view-doctor');
+            const btnP = document.getElementById('mode-btn-patient');
+            const btnD = document.getElementById('mode-btn-doctor');
+
+            if (targetMode === 'patient') {
+                pView.classList.remove('hidden');
+                dView.classList.add('hidden');
+                btnP.className = 'py-1.5 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 bg-white text-velcura-navy shadow-sm';
+                btnD.className = 'py-1.5 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 text-slate-500 hover:text-velcura-navy';
+            } else {
+                pView.classList.add('hidden');
+                dView.classList.remove('hidden');
+                btnD.className = 'py-1.5 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 bg-white text-velcura-navy shadow-sm';
+                btnP.className = 'py-1.5 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 text-slate-500 hover:text-velcura-navy';
+                renderDoctorConsole();
+            }
+        }
+
+        // =====================================================================
+        // PART 1: PATIENT QR CHECK-IN LOGIC
+        // =====================================================================
+        function goPatientStep(step) {
+            state.pStep = step;
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`p-step-${i}`).classList.add('hidden');
+            }
+            document.getElementById(`p-step-${step}`).classList.remove('hidden');
+            document.getElementById('patient-progress').style.width = (step * 25) + '%';
+        }
+
+        function adjustAge(delta) {
+            const inp = document.getElementById('inp-age');
+            let val = parseInt(inp.value) || 32;
+            val = Math.max(1, Math.min(110, val + delta));
+            inp.value = val;
+        }
+
+        function pickAge(val, btnEl) {
+            document.getElementById('inp-age').value = val;
+            document.querySelectorAll('.age-chip').forEach(el => {
+                el.className = 'age-chip px-2.5 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-600';
+            });
+            btnEl.className = 'age-chip px-2.5 py-2 rounded-xl bg-velcura-mint border border-velcura-teal text-xs font-extrabold text-velcura-cyan';
+        }
+
+        function selectGender(g, btnEl) {
+            state.gender = g;
+            document.querySelectorAll('.gender-card').forEach(el => {
+                el.className = 'gender-card py-3 px-2 rounded-2xl border-2 border-slate-200 bg-white text-slate-600 font-bold text-xs flex flex-col items-center gap-1';
+                const icon = el.querySelector('i');
+                if (icon) {
+                    icon.classList.remove('text-velcura-cyan');
+                    icon.classList.add('text-slate-400');
+                }
+            });
+            btnEl.className = 'gender-card py-3 px-2 rounded-2xl border-2 border-velcura-teal bg-velcura-mint text-velcura-navy font-extrabold text-xs flex flex-col items-center gap-1 shadow-sm';
+            const activeIcon = btnEl.querySelector('i');
+            if (activeIcon) {
+                activeIcon.classList.remove('text-slate-400');
+                activeIcon.classList.add('text-velcura-cyan');
+            }
+        }
+
+        function toggleSymptomPill(btnEl, label) {
+            const idx = state.selectedPills.indexOf(label);
+            if (idx > -1) {
+                state.selectedPills.splice(idx, 1);
+                btnEl.className = 'sym-pill px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white text-slate-600 text-[11px] font-semibold transition-all';
+                btnEl.innerText = '+ ' + label;
+            } else {
+                state.selectedPills.push(label);
+                btnEl.className = 'sym-pill px-2.5 py-1.5 rounded-xl border border-velcura-teal bg-velcura-mint text-velcura-navy text-[11px] font-bold transition-all';
+                btnEl.innerText = '✓ ' + label;
+            }
+        }
+
+        function selectDuration(dur, btnEl) {
+            state.duration = dur;
+            document.querySelectorAll('.dur-chip').forEach(el => {
+                el.className = 'dur-chip py-2 px-1 rounded-xl border border-slate-200 bg-white text-[11px] font-semibold text-slate-600';
+            });
+            btnEl.className = 'dur-chip py-2 px-1 rounded-xl border-2 border-velcura-teal bg-velcura-mint text-[11px] font-extrabold text-velcura-navy';
+        }
+
+        function selectHistoryFlag(flag, btnEl) {
+            state.historyFlag = flag;
+            document.querySelectorAll('.hist-chip').forEach(el => {
+                el.className = 'hist-chip py-2 px-2 rounded-xl border border-slate-200 bg-white text-[11px] font-semibold text-slate-600';
+            });
+            btnEl.className = 'hist-chip py-2 px-2 rounded-xl border-2 border-velcura-teal bg-velcura-mint text-[11px] font-extrabold text-velcura-navy';
+        }
+
+        // Web Speech API + Realistic Fallback
+        function toggleVoiceCapture() {
+            const micBtn = document.getElementById('btn-voice-mic');
+            const wave = document.getElementById('voice-wave');
+            const title = document.getElementById('voice-status-title');
+            const sub = document.getElementById('voice-status-sub');
+            const symInput = document.getElementById('inp-symptoms');
+
+            const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+            if (state.isListening && state.recognition) {
+                state.recognition.stop();
+                return;
+            }
+
+            if (SpeechRec) {
+                try {
+                    const rec = new SpeechRec();
+                    rec.lang = 'hi-IN';
+                    rec.interimResults = false;
+
+                    rec.onstart = () => {
+                        state.isListening = true;
+                        micBtn.classList.add('mic-recording');
+                        wave.classList.remove('hidden');
+                        wave.classList.add('flex');
+                        title.innerText = 'Aap boliye, hum sun rahe hain...';
+                        sub.innerText = 'Listening live (Hindi / English)';
+                    };
+
+                    rec.onresult = (e) => {
+                        const spoken = e.results[0][0].transcript;
+                        symInput.value = spoken;
+                        showToast('Voice note captured clearly!');
+                    };
+
+                    rec.onerror = () => {
+                        runFallbackVoiceDemo();
+                    };
+
+                    rec.onend = () => {
+                        state.isListening = false;
+                        micBtn.classList.remove('mic-recording');
+                        wave.classList.add('hidden');
+                        wave.classList.remove('flex');
+                        title.innerText = 'Bol kar batayein (Tap Mic)';
+                        sub.innerText = 'Hindi / Hinglish / English';
+                    };
+
+                    state.recognition = rec;
+                    rec.start();
+                } catch (err) {
+                    runFallbackVoiceDemo();
+                }
+            } else {
+                runFallbackVoiceDemo();
+            }
+        }
+
+        function runFallbackVoiceDemo() {
+            const micBtn = document.getElementById('btn-voice-mic');
+            const wave = document.getElementById('voice-wave');
+            const title = document.getElementById('voice-status-title');
+            const sub = document.getElementById('voice-status-sub');
+            const symInput = document.getElementById('inp-symptoms');
+
+            state.isListening = true;
+            micBtn.classList.add('mic-recording');
+            wave.classList.remove('hidden');
+            wave.classList.add('flex');
+            title.innerText = 'Sun rahe hain (Demo Voice)...';
+            sub.innerText = 'Transcribing patient speech...';
+
+            setTimeout(() => {
+                symInput.value = '2 din se bukhar (102°F) aur badan dard ho raha hai. Ulti nahi hai.';
+                state.isListening = false;
+                micBtn.classList.remove('mic-recording');
+                wave.classList.add('hidden');
+                wave.classList.remove('flex');
+                title.innerText = 'Aawaz likh li gayi ✓';
+                sub.innerText = 'Tap mic to speak again';
+                showToast('Voice note transcribed into clinical intake!');
+            }, 1600);
+        }
+
+        // Submit Check-in & Build Clean 5-Second Summary Structure
+        function submitPatientCheckin() {
+            const name = document.getElementById('inp-name').value.trim() || 'Rahul';
+            const age = parseInt(document.getElementById('inp-age').value) || 32;
+            const phone = document.getElementById('inp-phone').value.trim() || '9823145678';
+            const note = document.getElementById('inp-symptoms').value.trim() || 'Fever and body ache';
+            const tags = state.selectedPills.length ? [...state.selectedPills] : ['Fever'];
+
+            const primarySymptom = tags[0] || 'Fever';
+            const otherSymptoms = tags.slice(1).join(', ');
+            const formattedComplaint = otherSymptoms
+                ? `${primarySymptom} ${state.duration} · ${otherSymptoms}`
+                : `${primarySymptom} ${state.duration}`;
+
+            const hasVomiting = tags.includes('Vomiting') || note.toLowerCase().includes('ulti');
+            const hasTemp102 = note.includes('102');
+
+            const newFindings = [
+                { label: 'Temperature', value: hasTemp102 ? '102°F' : (primarySymptom === 'Fever' ? 'Elevated (patient reported)' : 'Not recorded') },
+                { label: 'Vomiting', value: hasVomiting ? 'Yes (Reported)' : 'No' },
+                { label: 'Medical history', value: state.historyFlag }
+            ];
+
+            const newAttention = [
+                primarySymptom === 'Fever' ? 'Assess fever and hydration' : `Assess ${primarySymptom.toLowerCase()} severity`,
+                'Check for warning signs',
+                state.historyFlag === 'Not reported' ? 'Relevant history: Not yet collected' : `Verify ${state.historyFlag}`
+            ];
+
+            let targetPatient = state.patients.find(p => p.name.toLowerCase() === name.toLowerCase());
+            let assignedToken = '#A-14';
+            let assignedId = 'A-14';
+
+            if (!targetPatient) {
+                const nextNum = 14 + state.patients.length;
+                assignedId = `A-${nextNum}`;
+                assignedToken = `#A-${nextNum}`;
+
+                targetPatient = {
+                    id: assignedId,
+                    token: assignedToken,
+                    name: name,
+                    age: age,
+                    gender: state.gender,
+                    visitType: 'New Visit',
+                    phone: phone,
+                    priority: primarySymptom === 'Fever' ? 'amber' : 'green',
+                    attentionLabel: `${primarySymptom} · ${state.duration.replace('since ', '')}`,
+                    status: 'waiting',
+                    mainComplaint: formattedComplaint,
+                    keyFindings: newFindings,
+                    doctorAttention: newAttention,
+                    symptomsNote: note,
+                    followupState: 'scheduled',
+                    followupReplyText: '24h check-in queued',
+                    doctorReplySent: ''
+                };
+                state.patients.unshift(targetPatient);
+            } else {
+                targetPatient.name = name;
+                targetPatient.age = age;
+                targetPatient.gender = state.gender;
+                targetPatient.phone = phone;
+                targetPatient.visitType = 'New Visit';
+                targetPatient.mainComplaint = formattedComplaint;
+                targetPatient.keyFindings = newFindings;
+                targetPatient.doctorAttention = newAttention;
+                targetPatient.symptomsNote = note;
+                targetPatient.status = 'waiting';
+                targetPatient.attentionLabel = `${primarySymptom} · ${state.duration.replace('since ', '')}`;
+                assignedToken = targetPatient.token;
+                assignedId = targetPatient.id;
+            }
+
+            state.activePatientId = assignedId;
+
+            // Populate Boarding Pass
+            document.getElementById('token-pass-number').innerText = assignedToken;
+            document.getElementById('token-pass-patient').innerText = `${name}, ${age}`;
+            document.getElementById('token-pass-note').innerText = formattedComplaint;
+
+            updateHeaderBadges();
+            goPatientStep(4);
+            showToast(`Token ${assignedToken} synced to Doctor Console!`);
+        }
+
+        function resetNewCheckin() {
+            document.getElementById('inp-name').value = '';
+            document.getElementById('inp-symptoms').value = '';
+            state.selectedPills = [];
+            document.querySelectorAll('.sym-pill').forEach(el => {
+                const cleanText = el.innerText.replace('✓ ', '').replace('+ ', '');
+                el.className = 'sym-pill px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white text-slate-600 text-[11px] font-semibold transition-all';
+                el.innerText = '+ ' + cleanText;
+            });
+            goPatientStep(1);
+        }
+
+        // =====================================================================
+        // PART 2: DOCTOR OPD CONSOLE & 5-SECOND SUMMARY CARD
+        // =====================================================================
+        function renderDoctorConsole() {
+            updateHeaderBadges();
+            renderTokenStrip();
+            renderActiveSummaryCard();
+            renderRecoveryTracker();
+        }
+
+        function updateHeaderBadges() {
+            const waitingCount = state.patients.filter(p => p.status === 'waiting').length;
+            const alertCount = state.patients.filter(p => p.followupState === 'worse' || p.followupState === 'mild').length;
+
+            document.getElementById('header-waiting-badge').innerText = waitingCount;
+            document.getElementById('doc-stat-waiting').innerText = waitingCount;
+            document.getElementById('doc-stat-seen').innerText = state.seenCount;
+            document.getElementById('doc-stat-alerts').innerText = alertCount;
+        }
+
+        function renderTokenStrip() {
+            const strip = document.getElementById('doctor-token-strip');
+            strip.innerHTML = '';
+
+            state.patients.forEach(p => {
+                const isActive = p.id === state.activePatientId;
+                let dotColor = 'bg-emerald-500';
+                if (p.priority === 'red') dotColor = 'bg-rose-500';
+                else if (p.priority === 'amber') dotColor = 'bg-amber-500';
+
+                const pill = document.createElement('button');
+                pill.type = 'button';
+                pill.onclick = () => {
+                    state.activePatientId = p.id;
+                    document.getElementById('sum-history-drawer').classList.add('hidden');
+                    renderDoctorConsole();
+                };
+
+                pill.className = isActive
+                    ? 'flex-shrink-0 px-3 py-2 rounded-2xl bg-velcura-navy text-white border-2 border-velcura-navy shadow-sm text-left transition-all flex items-center gap-2'
+                    : 'flex-shrink-0 px-3 py-2 rounded-2xl bg-white text-velcura-navy border border-velcura-border hover:border-slate-300 text-left transition-all flex items-center gap-2 shadow-soft';
+
+                pill.innerHTML = `
+                    <span class="w-2 h-2 rounded-full ${dotColor} flex-shrink-0"></span>
+                    <div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-xs font-extrabold">${p.token}</span>
+                            <span class="text-xs font-bold ${isActive ? 'text-slate-100' : 'text-slate-700'}">${p.name}, ${p.age}</span>
+                        </div>
+                        <p class="text-[9px] font-semibold ${isActive ? 'text-slate-300' : 'text-slate-400'}">
+                            ${p.status === 'seen' ? '✓ Seen Today' : p.attentionLabel}
+                        </p>
+                    </div>
+                `;
+                strip.appendChild(pill);
+            });
+        }
+
+        function renderActiveSummaryCard() {
+            const p = state.patients.find(item => item.id === state.activePatientId) || state.patients[0];
+            if (!p) return;
+
+            // Header: PATIENT: Rahul, 32 | New Visit
+            document.getElementById('sum-token').innerText = p.token;
+            document.getElementById('sum-patient-header').innerHTML = `
+                PATIENT: ${p.name}, ${p.age} <span class="text-slate-300 font-normal">|</span> <span class="text-velcura-cyan">${p.visitType || 'New Visit'}</span>
+            `;
+
+            const statusPill = document.getElementById('sum-status-pill');
+            if (p.status === 'seen') {
+                statusPill.className = 'text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 flex-shrink-0';
+                statusPill.innerText = '✓ Consult Started';
+            } else {
+                statusPill.className = 'text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-200/80 text-slate-600 flex-shrink-0';
+                statusPill.innerText = 'Waiting';
+            }
+
+            // 1. 🔴 MAIN COMPLAINT
+            document.getElementById('sum-main-complaint').innerText = p.mainComplaint;
+
+            // 2. KEY FINDINGS
+            const findingsEl = document.getElementById('sum-key-findings');
+            findingsEl.innerHTML = p.keyFindings.map(f => `
+                <div class="flex items-center justify-between">
+                    <span class="text-slate-500 font-medium">${f.label}:</span>
+                    <span class="font-bold text-velcura-navy">${f.value}</span>
+                </div>
+            `).join('');
+
+            // 3. ⚠️ DOCTOR'S ATTENTION
+            const attentionEl = document.getElementById('sum-doctor-attention');
+            attentionEl.innerHTML = p.doctorAttention.map(item => `
+                <li class="flex items-start gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mt-1.5 flex-shrink-0"></span>
+                    <span>${item}</span>
+                </li>
+            `).join('');
+
+            // Full History Drawer Data
+            document.getElementById('sum-raw-note').innerText = `"${p.symptomsNote}"`;
+            document.getElementById('sum-raw-meta').innerText = `Mobile: +91 ${p.phone} • Token ${p.token}`;
+
+            // Primary Action CTA
+            const ctaBtn = document.getElementById('btn-complete-visit');
+            if (p.status === 'seen') {
+                ctaBtn.className = 'py-3 px-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-card active:scale-[0.99] transition-all';
+                ctaBtn.innerHTML = `<i class="fa-brands fa-whatsapp text-sm"></i> <span>Simulate 24h Reply</span>`;
+            } else {
+                ctaBtn.className = 'py-3 px-3 rounded-2xl bg-velcura-navy hover:bg-velcura-blue text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-card active:scale-[0.99] transition-all';
+                ctaBtn.innerHTML = `<span>Start Consultation</span> <i class="fa-solid fa-arrow-right text-[10px] text-teal-300"></i>`;
+            }
+        }
+
+        function toggleFullHistory() {
+            const drawer = document.getElementById('sum-history-drawer');
+            drawer.classList.toggle('hidden');
+        }
+
+        function completeDoctorVisit() {
+            const p = state.patients.find(item => item.id === state.activePatientId);
+            if (!p) return;
+
+            if (p.status === 'seen') {
+                openWhatsAppSim(p.id);
+                return;
+            }
+
+            p.status = 'seen';
+            state.seenCount += 1;
+            if (p.followupState === 'scheduled') {
+                p.followupReplyText = '24h WhatsApp check-in active (Tap Test Reply)';
+            }
+
+            renderDoctorConsole();
+            showToast(`Consultation started for ${p.name} • 24h Follow-up Queued!`);
+        }
+
+        // =====================================================================
+        // PART 3: 24-HOUR RECOVERY TRACKER & WHATSAPP SIMULATOR
+        // =====================================================================
+        function renderRecoveryTracker() {
+            const container = document.getElementById('recovery-list');
+            container.innerHTML = '';
+
+            // Sort so 'worse' and 'mild' alerts appear right at the top for Doctor!
+            const rank = { worse: 1, mild: 2, scheduled: 3, better: 4 };
+            const sorted = [...state.patients].sort((a, b) => (rank[a.followupState] || 5) - (rank[b.followupState] || 5));
+
+            sorted.forEach(p => {
+                let badgeHtml = '';
+                let cardBorder = 'border-slate-200 bg-slate-50/70';
+
+                if (p.followupState === 'worse') {
+                    badgeHtml = `<span class="px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 text-[10px] font-extrabold">🔴 Needs Attention</span>`;
+                    cardBorder = 'border-rose-200 bg-rose-50/40';
+                } else if (p.followupState === 'mild') {
+                    badgeHtml = `<span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-extrabold">🟡 Mild Relief</span>`;
+                    cardBorder = 'border-amber-200 bg-amber-50/40';
+                } else if (p.followupState === 'better') {
+                    badgeHtml = `<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-extrabold">🟢 Recovered</span>`;
+                } else {
+                    badgeHtml = `<span class="px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 text-[10px] font-bold">⏳ 24h Queued</span>`;
+                }
+
+                const needsDoctorAction = (p.followupState === 'worse' || p.followupState === 'mild');
+
+                const item = document.createElement('div');
+                item.className = `rounded-2xl border ${cardBorder} p-3 space-y-2 transition-all`;
+                item.innerHTML = `
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-xs font-extrabold text-velcura-navy">${p.token} ${p.name}</span>
+                            <span class="text-[10px] text-slate-500">(${p.age}${p.gender})</span>
+                        </div>
+                        ${badgeHtml}
+                    </div>
+                    <p class="text-[11px] font-semibold text-slate-700">${p.followupReplyText}</p>
+                    ${needsDoctorAction ? renderDoctorQuickActionRow(p) : ''}
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function renderDoctorQuickActionRow(p) {
+            if (p.doctorReplySent) {
+                return `
+                    <div class="pt-1.5 border-t border-slate-200/70 flex items-center justify-between text-[11px] text-emerald-700 font-bold">
+                        <span><i class="fa-brands fa-whatsapp"></i> Sent: "${p.doctorReplySent}"</span>
+                        <button onclick="clearDoctorReply('${p.id}')" class="text-[10px] text-slate-400 underline">Undo</button>
+                    </div>
+                `;
+            }
+            return `
+                <div class="pt-1.5 border-t border-slate-200/70 space-y-1">
+                    <span class="text-[9px] font-extrabold uppercase tracking-wider text-slate-500">1-Tap Doctor WhatsApp Reply:</span>
+                    <div class="flex flex-wrap gap-1.5">
+                        <button onclick="sendDoctorQuickReply('${p.id}', 'Aaj sham OPD mein aakar dikha lein')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-velcura-navy hover:text-white border border-slate-200 text-[10px] font-bold text-velcura-navy shadow-sm transition-colors">
+                            ↩ Aaj sham OPD aayein
+                        </button>
+                        <button onclick="sendDoctorQuickReply('${p.id}', ' कृपया clinic reception par sampark karein')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-velcura-navy hover:text-white border border-slate-200 text-[10px] font-bold text-velcura-navy shadow-sm transition-colors">
+                            ↩ Clinic sampark karein
+                        </button>
+                        <button onclick="sendDoctorQuickReply('${p.id}', 'Reception se abhi call karwa rahe hain')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-velcura-navy hover:text-white border border-slate-200 text-[10px] font-bold text-velcura-navy shadow-sm transition-colors">
+                            📞 Reception Call
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function sendDoctorQuickReply(patientId, msg) {
+            const p = state.patients.find(item => item.id === patientId);
+            if (!p) return;
+            p.doctorReplySent = msg;
+            renderRecoveryTracker();
+            showToast(`WhatsApp note sent to ${p.name}!`);
+        }
+
+        function clearDoctorReply(patientId) {
+            const p = state.patients.find(item => item.id === patientId);
+            if (!p) return;
+            p.doctorReplySent = '';
+            renderRecoveryTracker();
+        }
+
+        function scrollToRecoveryTracker() {
+            document.getElementById('recovery-tracker-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // WhatsApp Bottom-Sheet Simulator Controls
+        function openWhatsAppSim(preferredId) {
+            const select = document.getElementById('wa-patient-select');
+            select.innerHTML = '';
+
+            state.patients.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.id;
+                opt.innerText = `${p.token} • ${p.name}, ${p.age}`;
+                select.appendChild(opt);
+            });
+
+            select.value = preferredId || state.activePatientId || state.patients[0].id;
+            syncWhatsAppPreview();
+            document.getElementById('whatsapp-modal').classList.remove('hidden');
+        }
+
+        function syncWhatsAppPreview() {
+            const pid = document.getElementById('wa-patient-select').value;
+            const p = state.patients.find(item => item.id === pid) || state.patients[0];
+            document.getElementById('wa-msg-name').innerText = p.name;
+            document.getElementById('wa-patient-reply-bubble').classList.add('hidden');
+        }
+
+        function closeWhatsAppSim() {
+            document.getElementById('whatsapp-modal').classList.add('hidden');
+        }
+
+        function triggerPatientFollowupReply(statusKey, replyLabel) {
+            const pid = document.getElementById('wa-patient-select').value;
+            const p = state.patients.find(item => item.id === pid);
+            if (!p) return;
+
+            p.followupState = statusKey;
+            p.followupReplyText = replyLabel;
+            p.doctorReplySent = '';
+
+            if (statusKey === 'worse') {
+                p.priority = 'red';
+                p.attentionLabel = '🔴 24h Alert: Unwell';
+            } else if (statusKey === 'mild') {
+                p.priority = 'amber';
+                p.attentionLabel = '🟡 24h: Mild Relief';
+            } else {
+                p.priority = 'green';
+                p.attentionLabel = '🟢 24h: Recovered';
+            }
+
+            // Show instant outgoing WhatsApp bubble before switching to Doctor Console
+            const bubble = document.getElementById('wa-patient-reply-bubble');
+            document.getElementById('wa-reply-text').innerText = replyLabel;
+            bubble.classList.remove('hidden');
+
+            updateHeaderBadges();
+
+            setTimeout(() => {
+                closeWhatsAppSim();
+                switchMode('doctor');
+                scrollToRecoveryTracker();
+                showToast(`${p.name}'s 24h reply synced to Doctor Tracker!`);
+            }, 650);
+        }
+
+        // Toast Helper
+        let toastTimer = null;
+        function showToast(msg) {
+            const toast = document.getElementById('app-toast');
+            document.getElementById('app-toast-text').innerText = msg;
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 2800);
+        }
+
+        // Initial Boot
+        window.addEventListener('DOMContentLoaded', () => {
+            updateHeaderBadges();
+            renderDoctorConsole();
+            switchMode('patient');
+        });
+    </script>
+</body>
+</html>
